@@ -63,7 +63,7 @@ def main(config: DictConfig):
                     obs_img = obs["image"].copy()
 
                     with Timer("Encoding"):
-                        obs_img = numpy2img_tensor(obs_img, device).unsqueeze(0)
+                        obs_img = numpy2img_tensor(obs_img).unsqueeze(0)
                         state = vae.obs_to_z(obs_img) ## [1, 64]
 
                     with Timer("Decoding"):
