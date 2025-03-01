@@ -2,6 +2,7 @@ from omegaconf import DictConfig, OmegaConf
 import hydra
 import torch
 from torch.utils.tensorboard import SummaryWriter
+import traceback
 import gymnasium as gym
 
 from envs.car_racing import CarRacingWithInfoWrapper
@@ -55,28 +56,27 @@ def main(config: DictConfig):
             obs, vehicle_info = env.reset()
             episode_reward = 0
 
+            print(f"Episode {episode} started.")
             # ステップループ
             for step in range(max_steps):
                 with Timer(f"Step {step}"):
                     obs_img = obs["image"].copy()
 
                     with Timer("Encoding"):
-                        obs_img = numpy2img_tensor(obs_img, device)
-                        state = vae.obs_to_z(obs_img)
+                        obs_img = numpy2img_tensor(obs_img, device).unsqueeze(0)
+                        state = vae.obs_to_z(obs_img) ## [1, 64]
 
                     with Timer("Decoding"):
                         reconstucted_img = vae.sample(state)
-                        reconstucted_img = img_tensor2numpy(reconstucted_img)
 
                     # 再構成画像を間隔ごとにTensorBoardに記録（HWC→CHW変換）
                     if step % log_interval == 0:
-                        image_tensor = torch.tensor(reconstucted_img)
-                        if image_tensor.ndim == 3 and image_tensor.shape[-1] in [1, 3]:
-                            image_tensor = image_tensor.permute(2, 0, 1)  # CHW形式に変換
+                        reconstucted_img= reconstucted_img.squeeze(0).float().cpu().detach()
                         global_step = episode * max_steps + step
-                        writer.add_image("Reconstructed/Image", image_tensor, global_step)
+                        writer.add_image("Reconstructed/Image", reconstucted_img, global_step)
 
                     with Timer("Agent Action"):
+                        state = state.squeeze(0)
                         action = agent.select_action(state=state, evaluate=False)
 
                     # TensorBoard にアクションの分布を記録
@@ -88,7 +88,7 @@ def main(config: DictConfig):
                     next_obs_img = next_obs["image"].copy()
 
                     with Timer("Next Encoding"):
-                        next_obs_img = numpy2img_tensor(next_obs_img, device)
+                        next_obs_img = numpy2img_tensor(next_obs_img, device).unsqueeze(0)
                         next_state = vae.obs_to_z(next_obs_img)
 
                     with Timer("Buffer Add"):
@@ -131,6 +131,7 @@ def main(config: DictConfig):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+        traceback.print_exc()
     finally:
         # 最後に報酬を保存し、TensorBoardのwriterをクローズする
         # np.save(f"{config.output_dir}/episode_rewards.npy", np.array(episode_rewards))

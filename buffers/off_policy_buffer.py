@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 from collections import deque
 
@@ -37,27 +38,39 @@ class OffPolicyEncoderBuffer:
         state, action, _, _, _ = self.temp_buffer[0]  # 初期ステップ
         reward = 0
         discount = 1
-        next_state, done = self.temp_buffer[-1][4:]  # 最後のステップの遷移先
-        
+        _, _, _, next_state, done = self.temp_buffer[-1]  # 5つの要素を展開
+
         for _, _, r, _, d in self.temp_buffer:
             reward += discount * r
             discount *= self.gamma
             if d:
                 break
 
-
         idx = self.position
+
+        # state, next_state を NumPy に変換（PyTorch Tensor の場合のみ detach()）
+        if isinstance(state, torch.Tensor):
+            state = state.detach().cpu().numpy()
+        if isinstance(next_state, torch.Tensor):
+            next_state = next_state.detach().cpu().numpy()
+
+        # action も NumPy に変換（PyTorch Tensor の場合のみ detach()）
+        if isinstance(action, torch.Tensor):
+            action = action.detach().cpu().numpy()
+
         self.buffer["state"][idx] = state
         self.buffer["action"][idx] = action
-        self.buffer["reward"][idx] = reward
+        self.buffer["reward"][idx] = reward  # NumPy のスカラー値なのでそのまま
         self.buffer["next_state"][idx] = next_state
-        self.buffer["done"][idx] = done
+        self.buffer["done"][idx] = done  # Boolean 値なのでそのまま
 
         self.position = (self.position + 1) % self.size
         if self.position == 0:
             self.full = True
 
-        self.temp_buffer.popleft()  # 先頭要素を削除 (deque の popleft で高速化)
+        self.temp_buffer.popleft()  # 先頭要素を削除
+
+
 
     def sample(self, batch_size):
         """
