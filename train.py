@@ -76,7 +76,6 @@ def main(config: DictConfig):
                         writer.add_image("Reconstructed/Image", reconstucted_img, global_step)
 
                     with Timer("Agent Action"):
-                        state = state.squeeze(0)
                         action = agent.select_action(state=state, evaluate=False)
 
                     # TensorBoard にアクションの分布を記録
