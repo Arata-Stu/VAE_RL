@@ -15,6 +15,7 @@ from utils.timers import Timer as Timer
 
 @hydra.main(config_path='config', config_name='train', version_base='1.2')
 def main(config: DictConfig):
+    OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
     print('------ Configuration ------')
     print(OmegaConf.to_yaml(config))
     print('---------------------------')

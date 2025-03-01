@@ -96,3 +96,35 @@ class SACAgent:
             "alpha_loss": alpha_loss.item(),
             "alpha": torch.exp(self.log_alpha).item()
         }
+    
+    def save(self, filepath, episode=None):
+        """
+        モデルのチェックポイントを保存する
+        """
+        checkpoint = {
+            "episode": episode,
+            "actor_state_dict": self.actor.state_dict(),
+            "critic_state_dict": self.critic.state_dict(),
+            "critic_target_state_dict": self.critic_target.state_dict(),
+            "actor_optimizer_state_dict": self.actor_optimizer.state_dict(),
+            "critic_optimizer_state_dict": self.critic_optimizer.state_dict(),
+            "alpha_optimizer_state_dict": self.alpha_optimizer.state_dict(),
+            "log_alpha": self.log_alpha,
+        }
+        torch.save(checkpoint, filepath)
+        print(f"Checkpoint saved to {filepath}")
+
+    def load(self, filepath):
+        """
+        保存されたチェックポイントをロードする
+        """
+        checkpoint = torch.load(filepath, map_location=self.device)
+        self.actor.load_state_dict(checkpoint["actor_state_dict"])
+        self.critic.load_state_dict(checkpoint["critic_state_dict"])
+        self.critic_target.load_state_dict(checkpoint["critic_target_state_dict"])
+        self.actor_optimizer.load_state_dict(checkpoint["actor_optimizer_state_dict"])
+        self.critic_optimizer.load_state_dict(checkpoint["critic_optimizer_state_dict"])
+        self.alpha_optimizer.load_state_dict(checkpoint["alpha_optimizer_state_dict"])
+        self.log_alpha = checkpoint["log_alpha"].to(self.device)
+
+        print(f"Checkpoint loaded from {filepath}")
