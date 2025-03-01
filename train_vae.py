@@ -62,7 +62,7 @@ def main(config: DictConfig):
     
     model = VAETrainer(latent_dim=config.latent_dim, learning_rate=config.learning_rate)
     if config.ckpt_path is not None:
-        model.load_from_checkpoint(config.ckpt_path)
+        model = VAETrainer.load_from_checkpoint(config.ckpt_path, latent_dim=config.latent_dim, learning_rate=config.learning_rate)
     
     # チェックポイントの設定 (Top 3 の val_loss のモデルを保存)
     checkpoint_callback = ModelCheckpoint(
