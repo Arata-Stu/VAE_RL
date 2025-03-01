@@ -1,4 +1,5 @@
 ckpt_path: ./ckpts/CNNVAE_1.ckpt
+latent_dim: 64
 
 checkpoint_dir: ???
 data_dir: ???
