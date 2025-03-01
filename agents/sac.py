@@ -34,7 +34,6 @@ class SACAgent:
         エージェントが環境との相互作用時にアクションを選択するための関数
         入力は encoder の出力 z のみを使用
         """
-        state = torch.FloatTensor(state).unsqueeze(0).to(self.device)
         if evaluate:
             with torch.no_grad():
                 # 評価時は平均値（tanh適用済み）を利用
