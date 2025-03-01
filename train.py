@@ -4,6 +4,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 import traceback
 import gymnasium as gym
+import os
 
 from envs.car_racing import CarRacingWithInfoWrapper
 from agents.agents import get_agents
@@ -116,6 +117,7 @@ def main(config: DictConfig):
             episode_rewards.append(episode_reward)
             writer.add_scalar("Reward/Episode", episode_reward, episode)
 
+            os.makedirs(config.model_dir, exist_ok=True)
             # トップモデルの保存処理
             if len(top_models) < 3:
                 top_models.append((episode, episode_reward))

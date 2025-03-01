@@ -3,4 +3,3 @@ max_steps: 1000
 batch_size: 128
 reconstructed_log_interval: 100
 
-model_dir: ???

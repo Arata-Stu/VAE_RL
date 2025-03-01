@@ -5,3 +5,5 @@ defaults:
   - envs: car_racing
   - encoder: conv
   
+
+model_dir: ???

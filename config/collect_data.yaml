@@ -1,0 +1,6 @@
+defaults:
+  - general
+  - envs: car_racing
+ 
+  
+save_dir: ./outputs/data/
