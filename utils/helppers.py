@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 
-def numpy2img_tensor(img: np.ndarray, device: torch.device) -> torch.Tensor:
+def numpy2img_tensor(img: np.ndarray) -> torch.Tensor:
     img = img.astype(np.float32) / 255.0
     img = img.transpose((2, 0, 1))
-    img = torch.from_numpy(img).float().to(device)
+    img = torch.from_numpy(img).float()
     return img
 
 def img_tensor2numpy(img: torch.Tensor) -> np.ndarray:
