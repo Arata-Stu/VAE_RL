@@ -1,0 +1,4 @@
+type: off_policy
+size: 1e6
+n_step: 3
+gamma: 0.99

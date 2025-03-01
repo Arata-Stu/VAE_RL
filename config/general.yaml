@@ -1,0 +1,4 @@
+max_episodes: 1000
+max_steps: 1000
+batch_size: 128
+reconstructed_log_interval: 100

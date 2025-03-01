@@ -1,0 +1,7 @@
+name: SAC
+hidden_dim: 128
+actor_lr: 1e-4
+critic_lr: 1e-4
+alpha_lr: 1e-4
+tau: 0.005
+gamma: 0.99
