@@ -1,0 +1,9 @@
+defaults:
+  - general
+  - agent: ???
+  - buffer: off_policy 
+  - envs: car_racing
+  - encoder: conv
+  
+
+model_dir: ???
