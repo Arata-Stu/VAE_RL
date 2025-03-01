@@ -4,6 +4,7 @@ latent_dim: 64
 checkpoint_dir: ???
 data_dir: ???
 num_workers: 4
+epochs: 100
 batch_size: 64
 img_size: [64, 64]
 learning_rate: 1e-4
